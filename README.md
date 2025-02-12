@@ -20,3 +20,6 @@ This dataset contains agricultural data for 1,000,000 samples aimed at predictin
 -Days_to_Harvest: The number of days taken for the crop to be harvested after planting.
 
 -Yield_tons_per_hectare: The total crop yield produced, measured in tons per hectare.
+
+
+### source: https://www.kaggle.com/datasets/samuelotiattakorah/agriculture-crop-yield/data
