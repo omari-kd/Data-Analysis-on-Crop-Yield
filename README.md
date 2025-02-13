@@ -1,8 +1,5 @@
 # Data-Analysis-on-Crop-Yield
-<<<<<<< HEAD
-# Data-Analytics-Pathway_Assessment
-# Data-Analytics-Pathway_Assessment
-=======
+
 This dataset contains agricultural data for 1,000,000 samples aimed at predicting crop yield (in tons per hectare) based on various factors. The dataset can be used for regression tasks in machine learning, especially for predicting crop productivity.
 
 -Region: The geographical region where the crop is grown (North, East, South, West).
@@ -27,4 +24,3 @@ This dataset contains agricultural data for 1,000,000 samples aimed at predictin
 
 
 ### source: https://www.kaggle.com/datasets/samuelotiattakorah/agriculture-crop-yield/data
->>>>>>> 2618d2e7259818452a1c3511aae68c8289407cd5
