@@ -50,9 +50,7 @@ Analytic Questions:
 
 2.  **Data Understanding:**
 
-    The data set consisted of 1,000,000 records and 10 variables. Key Variables included:
-
-    region, soil type, crop, rainfall_mm, temperature Celsius, fertilizer_used, irrigation_used, weather_condition, days_to_harvest and yield_tons_per_hectare.
+    The data set consisted of 1,000,000 records and 10 variables. Key Variables included: region, soil type, crop, rainfall_mm, temperature Celsius, fertilizer_used, irrigation_used, weather_condition, days_to_harvest and yield_tons_per_hectare.
 
 3.  **Data Preparation**
 
@@ -167,4 +165,18 @@ data %>% ggplot(aes(x = irrigation_used, y = yield_tons_per_hectare, fill = irri
   
 ```
 
-The bar chart illustrates the yield by irrigation and crop type. The False shows no irrigation and the true shows irrigation were used which is denoted by the blue colour. In all crop types the use of irrigation shown influence in the increase of crop yield.
+The bar chart illustrates the impact of irrigation on crop yield across different crop types. The "False" category represents crops where no irrigation was used, while the "True" category indicates that irrigation was applied, highlighted in blue.
+
+In all crop types shown, the use of irrigation (True) is associated with a noticeable increase in crop yield, as compared to the "False" category, where no irrigation was utilized.
+
+**In which regions does irrigation have the most significant effect on yield?**
+
+**Does the use of fertilizer application increase the crop yield compared to crops that were not fertilized?**
+
+**How does the impact of irrigation vary across different crop types and soil types?**
+
+**How do crop yields differ by region (North, East, South, West)?**
+
+**What is the relationship between temperature and rainfall with respect to crop yield in different regions?**
+
+**Are certain crops more successful in specific regions and if so, what factors (e.g., temperature, soil type) contribute to this?**
