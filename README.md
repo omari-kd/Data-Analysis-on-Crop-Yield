@@ -24,4 +24,3 @@ This dataset contains agricultural data for 1,000,000 samples aimed at predictin
 
 
 ### source: https://www.kaggle.com/datasets/samuelotiattakorah/agriculture-crop-yield/data
->>>>>>> 2618d2e7259818452a1c3511aae68c8289407cd5
