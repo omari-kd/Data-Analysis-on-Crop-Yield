@@ -61,6 +61,7 @@ Analytic Questions:
     library(ggplot2)
     library(scales)
     library(reshape2)
+    library(tidyr)
     ```
 
     ```{r}
@@ -108,11 +109,12 @@ Analytic Questions:
       ggplot(aes(x = weather_condition, y = yield_tons_per_hectare, fill = weather_condition)) + 
       geom_bar(stat = "identity", position = "dodge", color = NA, width = 0.7) +
       coord_cartesian(ylim = c(0, 20)) +
-      labs(title = "Weather conditions by crop yield",
+      scale_fill_manual(values = c("Sunny" = "yellow", "Rainy" = "blue", "Cloudy" = "gray")) +
+      labs(title = "Yield by Weather Conditions",
            x = "Weather Condition",
            y = "Yield (tons per hectare)") +
-      theme_minimal()
-
+      theme_minimal() +
+      theme(plot.title = element_text(hjust = 0.5))
     ```
 
 Based on the chart, the total yield for these weather conditions ranges from 0 to approximately 10 tons per hectare. Since the yields for cloudy, rainy and sunny days are almost identical, it seems that the weather conditions didn’t dramatically influence the yield. This could suggest that the crops are adaptable to different weather patterns or that other factors (like soil quality, irrigation, or farming practices) may have a stronger influence on yield than the weather itself.
@@ -131,7 +133,7 @@ data %>%
   labs(title = "Yield by Weather Condition and Crop Type",
        x = "Weather Condition",
        y = "Yield (tons per hectare)") + 
-  theme_minimal()
+  theme_minimal() + theme(plot.title = element_text(hjust = 0.5))
 ```
 
 Barley seems to perform best under cloudy conditions, with other weather conditions (rainy and sunny) yielding slightly lower but still reasonable results. This could indicate that barley is more suited to cooler, overcast conditions, but still does well under a range of weather.
@@ -142,7 +144,7 @@ Rice appears to benefit more from rainy conditions, which is consistent with the
 
 Like rice, soy beans also seem to benefit from more water (rain), leading to higher yields during rainy weather. This indicates that adequate moisture is essential for maximizing soy bean growth.
 
-Similar to rice and soybeans, wheat seems to thrive with more moisture from rain.
+Similar to rice and soy beans, wheat seems to thrive with more moisture from rain.
 
 **Do rainy conditions result in a higher or lower yield compared to sunny or cloudy weather?**
 
@@ -155,14 +157,16 @@ For barley, cloudy weather appears to be optimal, while cotton and maize show st
 **Does the use of irrigation increase the crop yield compared to crops that were not irrigated?**
 
 ```{r warning=F}
-data %>% ggplot(aes(x = irrigation_used, y = yield_tons_per_hectare, fill = irrigation_used)) + 
+data %>%
+  ggplot(aes(x = irrigation_used, y = yield_tons_per_hectare, fill = irrigation_used)) + 
   geom_bar(stat = "identity", position = "dodge", width = 0.7) +
   facet_wrap(~crop) +
   scale_y_continuous(limits = c(0, 15), expand = c(0, 0)) +
+  scale_fill_manual(values = c("False" = "grey", "True" = "blue")) + 
   labs(title = "Yield by irrigation and crop type",
-       x= "Irrigation",
-       y= "Yield(tons per hectare)")
-  
+       x = "Irrigation",
+       y = "Yield (tons per hectare)") +   theme(plot.title = element_text(hjust = 0.5))
+
 ```
 
 The bar chart illustrates the impact of irrigation on crop yield across different crop types. The "False" category represents crops where no irrigation was used, while the "True" category indicates that irrigation was applied, highlighted in blue.
@@ -171,12 +175,210 @@ In all crop types shown, the use of irrigation (True) is associated with a notic
 
 **In which regions does irrigation have the most significant effect on yield?**
 
-**Does the use of fertilizer application increase the crop yield compared to crops that were not fertilized?**
+```{r warning=F}
+data %>% 
+  filter(irrigation_used == "True") %>%  # Filter to show only True values
+  ggplot(aes(x = irrigation_used, y = yield_tons_per_hectare, fill = irrigation_used)) + 
+  geom_bar(stat = "identity", position = "dodge", width = 0.7) +
+  facet_wrap(~region) + 
+  scale_y_continuous(limits = c(0, 15), expand = c(0, 0)) +
+  scale_fill_manual(values = c("True" = "lightblue")) + 
+  labs(title = "Yield by irrigation and region",
+       x = "Irrigation",
+       y = "Yield (tons per hectare)") + 
+  theme (plot.title = element_text(hjust = 0.5))
+```
+
+The bar chart illustrates the impact of irrigation on crop yield across different regions. The "True" category indicates that irrigation was applied, highlighted in blue. In all regions, the use of irrigation shows a significant positive effect on crop yield, with yields noticeably higher.
 
 **How does the impact of irrigation vary across different crop types and soil types?**
 
+```{r warning=F}
+data %>% 
+  ggplot(aes(x = irrigation_used, y = yield_tons_per_hectare, fill = irrigation_used)) + 
+  geom_bar(stat = "identity", position = "dodge", width = 0.7) +
+  facet_grid(crop ~ soil_type) +  
+  scale_y_continuous(limits = c(0, 15), expand = c(0, 0)) +
+  scale_fill_brewer(palette = "Blues") +
+  labs(title = "Impact of Irrigation on Yield by Crop Type and Soil Type",
+       x = "Irrigation",
+       y = "Yield (tons per hectare)") + theme(plot.title = element_text(hjust = 0.5))
+```
+
+**Does the use of fertilizer application increase the crop yield compared to crops that were not fertilized?**
+
+```{r warning=F}
+data %>% ggplot(aes(x = fertilizer_used, y = yield_tons_per_hectare, fill = fertilizer_used)) + 
+  geom_bar(stat = "identity", position = "dodge", width = 0.7) +
+  facet_wrap(~crop) +
+  scale_y_continuous(limits = c(0,15), expand = c(0,0)) +
+  scale_fill_manual(values = c("False" = "grey", "True" = "pink")) +
+  labs(title = "Yield by Fertilizer Application and Crops",
+       x = "Fertilizer",
+       y = "Yield (tons per hectare)"
+       ) +
+  theme_minimal() + theme(plot.title = element_text(hjust = 0.5))
+```
+
+The bar chart illustrates the impact of fertilizer on crop yield across different crop types. The "False" category represents crops where no fertilizer was applied, while the "True" category indicates that fertilizer was applied, highlighted in pink.
+
+In all crop types shown, the application of fertilizer (True) is associated with a noticeable increase in crop yield, as compared to the "False" category, where no fertilizer was applied.
+
 **How do crop yields differ by region (North, East, South, West)?**
+
+```{r warning=F}
+data %>% ggplot(aes(x = region, y = yield_tons_per_hectare, fill = region)) +
+  geom_bar(stat= "identity", position = "dodge", width = 0.7) + 
+  scale_y_continuous(limits = c(0,15), expand = c(0,0)) +
+  scale_fill_brewer(palette = "Greens") +
+  labs(title = "Yield by Different Regions",
+       x = "Region",
+       y = "Yield (tons per hectare)"
+       ) + theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5))
+```
+
+The chart above illustrates how crop yields differ by region (East, North, South, West). Each region is represented by distinct shades of green. Upon examining the plot, it becomes evident that the North, South and West regions exhibit nearly identical crop yields in tons per hectare.
+
+The East region, while still performing reasonably well, shows a slightly lower yield when compared to the other regions, though this difference is not statistically significant.
 
 **What is the relationship between temperature and rainfall with respect to crop yield in different regions?**
 
+```{r}
+# Calculate the correlation matrix
+corr_matrix <- data %>%
+  select(temperature_celsius, rainfall_mm, yield_tons_per_hectare) %>%
+  cor(use = "complete.obs")
+
+# Print the correlation matrix
+print(corr_matrix)
+
+
+# Convert the correlation matrix into a data frame for plotting
+corr_data <- as.data.frame(as.table(corr_matrix))
+
+# Round the correlation values to 2 decimal places
+corr_data$Freq <- round(corr_data$Freq, 2)
+
+# Create heatmap using plot
+ggplot(corr_data, aes(Var1, Var2, fill = Freq)) +
+  geom_tile() +
+  geom_text(aes(label = Freq), colour = "black", size = 3) +  # to add text labels
+  scale_fill_viridis_c() +  # Color scale for correlation values
+  labs(title = "Correlation Matrix: Temperature, Rainfall, and Crop Yield",
+       x = "Variable",
+       y = "Variable",
+       fill = "Correlation") +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5))
+```
+
+Temperature and Rainfall (0): The correlation between temperature and rainfall is almost zero (0.0001), which indicates that there's virtually no linear relationship between these two variables. As temperature increases or decreases, rainfall doesn't seem to follow any clear pattern.
+
+Temperature and Yield (0.09): The correlation between temperature and crop yield is weakly positive (0.09). This means that there is a very slight positive relationship between temperature and crop yield, although this correlation is not strong enough to draw definitive conclusions.
+
+Rainfall and Yield (0.8): The correlation between rainfall and crop yield is strong (0.8), suggesting that rainfall has a significant positive effect on crop yield. As rainfall increases, crop yield tends to increase as well, which aligns with the general understanding that more water supports better crop growth.
+
 **Are certain crops more successful in specific regions and if so, what factors (e.g., temperature, soil type) contribute to this?**
+
+```{r warning=F}
+data %>% 
+  ggplot(aes(x = region, y = yield_tons_per_hectare, fill = crop)) +
+  geom_bar(stat = "identity", position = "dodge", width = 0.7) +
+  scale_y_continuous(limits = c(0, 15), expand = c(0,0)) +
+  labs(title = "Crop Yield by Region and Crop Type",
+       x = "Region",
+       y = "Yield (tons per hectare)") +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5))
+
+
+# Linear regression to assess the influence of temperature and soil type on yield
+lm_model <- lm(yield_tons_per_hectare ~ temperature_celsius + soil_type + region, data = data)
+summary(lm_model)
+
+```
+
+### **Crop Yield by Region and Crop Type:**
+
+The chart shows how different crop types perform in various regions:
+
+-   **Wheat:** Most successful in the **East region**, where the yield is higher compared to other regions.
+
+-   **Barley:** Performs best in the **North region**, with higher yields there.
+
+-   **Rice:** Shows a significant yield increase in the **South**, indicating it thrives in this region's conditions.
+
+-   **Maize:** Exhibits the highest yields in the **West region**, suggesting it grows particularly well there.
+
+### **Further Analysis of Temperature and Soil Type:**
+
+Further analysis was conducted to assess the impact of **temperature** and **soil type** on crop yield, which might explain why certain crops perform better in specific regions.
+
+**Temperature (temperature_celsius):** The coefficient for temperature is **0.0201**, with a very low p-value (\< 2e-16). This indicates a statistically significant positive relationship between temperature and crop yield. For every 1°C increase in temperature, the crop yield increases by approximately **0.02 tons per hectare**.
+
+The coefficients for soil types (e.g., **Clay, Loam, Peaty, Sandy, Silt**) are all not statistically significant, as their p-values are much greater than the typical threshold (0.05):
+
+-   **Soil_typeClay:** p-value = 0.1844 (not significant)
+
+-   **Soil_typeLoam:** p-value = 0.8228 (not significant)
+
+-   **Soil_typePeaty:** p-value = 0.6859 (not significant)
+
+-   **Soil_typeSandy:** p-value = 0.4410 (not significant)
+
+-   **Soil_typeSilt:** p-value = 0.4448 (not significant)
+
+This suggests that soil type, in this model, does not have a significant impact on crop yield after accounting for temperature and region.
+
+-   **RegionNorth:** The coefficient for the North region is **0.0087**, and the p-value is **0.0704**, which is just below the common significance threshold of 0.05. This indicates a **marginally significant** positive effect on crop yield compared to the reference region (East or South).
+
+-   **RegionSouth and RegionWest:** Both of these regions have p-values greater than 0.05, indicating that the effects of these regions on crop yield are **not statistically significant**.
+
+Insights:
+
+-   Temperature has a significant positive impact on crop yield, with higher temperatures associated with higher yields, albeit with a small effect size.
+
+-   **Soil Type:** Soil type did not show a significant effect on yield in this analysis. While soil characteristics often play an essential role in crop production, other factors (like irrigation, temperature and region) may have a more dominant effect on yield in this case.
+
+-   Region has a small effect, but only the North region shows a marginally significant positive effect on yield.
+
+**Conclusion:**
+
+The analysis of crop yield data across different regions and crop types reveals some valuable insights:
+
+**Regional Crop Preferences:**
+
+-   Wheat performs best in the East, where regional conditions likely favor its growth.
+
+-   Barley yields the highest in the North, indicating it thrives in the conditions there.
+
+-   Rice shows the most significant yield increase in the South, suggesting this region provides optimal conditions for its growth.
+
+-   Maize achieves the highest yield in the West, highlighting regional differences in crop success.
+
+**Temperature's Influence on Crop Yield:**
+
+-   Temperature plays a significant role in increasing crop yield. Higher temperatures generally lead to higher yields, which might explain the regional differences in crop success. For instance, wheat's success in the East region could be due to more favorable temperature conditions.
+
+**Soil Type's Impact:**
+
+-   Soil type did not have a statistically significant effect on crop yield in this analysis. This suggests that while soil type is important, other factors such as temperature and regional conditions (like rainfall and irrigation) may have a stronger impact on crop yield.
+
+**Irrigation's Impact:**
+
+-   The use of irrigation shows a significant positive effect on crop yield, with yields noticeably higher.
+
+**Fertilizer's Impact:**
+
+-    The application of fertilizer (True) is associated with a noticeable increase in crop yield.
+
+**Rainfall's impact:**
+
+-   As rainfall increases, crop yield tends to increase as well, which aligns with the general understanding that more water supports better crop growth.
+
+**Deliverables:**
+
+Insights and visualizations were shared via:
+
+-   **GitHub Repository: Includes documentation, R script and data files.**
