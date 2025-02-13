@@ -1,5 +1,5 @@
 # load data
-data <- data.frame(read.csv("./00_raw_data/crop_yield.csv"))
+data <- read.csv("./00_raw_data/crop_yield.csv")
 View(data)
 
 # data preprocessing
@@ -77,7 +77,6 @@ range(data$yield_tons_per_hectare)
 # Look at correlation between numeric variables
 cor(data$rainfall_mm, data$yield_tons_per_hectare)
 cor(data$temperature_celsius, data$yield_tons_per_hectare)
-
 
 # library(randomForest)
 rf_model <- randomForest(yield_tons_per_hectare ~ rainfall_mm + temperature_celsius + soil_type + crop + irrigation_used + fertilizer_used, data=data)

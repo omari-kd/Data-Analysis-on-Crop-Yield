@@ -1,0 +1,170 @@
+---
+title: "Data Analysis on Crop Yield"
+author: "Omari Ebenezer"
+output: html_notebook
+---
+
+This project analyses crop yield to uncover insights into crop yield efficiency, fertilizer impacts on crop yield, the weather condition on crop yield and other related factors such as soil type, region, irrigation used.\
+
+## **CRISP-DM Framework**
+
+The analyses followed the CRISP-DM methodology, which includes the following stages:
+
+1.  **Business Understanding**
+
+The objectives were defined below, followed by the formulation of analytic questions to guide the analysis process.
+
+Objectives:
+
+-   Crop Yield Analysis by Soil Type: Identify which soil type had the highest crop yield.
+
+-   Impact of Fertilizer Usage on Crop Yield: Analyse the impact of fertilizer application on crop yield.
+
+-   Effect of Weather Conditions on Crop Yield: Understand how different weather conditions affect crop yield.
+
+-   Influence of Irrigation on Crop Yield: Investigate how irrigation affects crop yield.
+
+-   Seasonal and Regional Variations in Crop Yield: Examine the influence of geographical regions and climate factors on crop yield.
+
+Analytic Questions:
+
+-   What weather conditions (Sunny, Rainy, Cloudy) are most favourable for higher crop yields?
+
+-   Is there a relationship between weather conditions and specific crop types or regions in terms of yield?
+
+-   Do rainy conditions result in a higher or lower yield compared to sunny or cloudy weather?
+
+-   Does the use of irrigation increase the crop yield compared to crops that were not irrigated?
+
+-   Does the use of fertilizer application increase the crop yield compared to crops that were not fertilized?
+
+-   In which regions does irrigation have the most significant effect on yield?
+
+-   How does the impact of irrigation vary across different crop types and soil types?
+
+-   How do crop yields differ by region (North, East, South, West)?
+
+-   What is the relationship between temperature and rainfall with respect to crop yield in different regions?
+
+-   Are certain crops more successful in specific regions and if so, what factors (e.g., temperature, soil type) contribute to this?
+
+2.  **Data Understanding:**
+
+    The data set consisted of 1,000,000 records and 10 variables. Key Variables included:
+
+    region, soil type, crop, rainfall_mm, temperature Celsius, fertilizer_used, irrigation_used, weather_condition, days_to_harvest and yield_tons_per_hectare.
+
+3.  **Data Preparation**
+
+    ```{r}
+    # load libraries
+    library(dplyr)
+    library(janitor)
+    library(ggplot2)
+    library(scales)
+    library(reshape2)
+    ```
+
+    ```{r}
+    # load the data 
+    data <- read.csv("00_raw_data/crop_yield.csv")
+    ```
+
+    ```{r}
+    # clean column names
+    data <- data %>% clean_names()
+    ```
+
+    ```{r}
+    # check for NA's
+    colnames(data)[apply(data, 2, anyNA)]
+    ```
+
+    ```{r}
+    # check for duplicates
+    sum(duplicated(data))
+    ```
+
+    ```{r}
+    # check the structure of the data set
+    str(data)
+    ```
+
+4.  Exploratory Data Analysis
+
+    ```{r}
+    # summary of the yield 
+    summary(data$yield_tons_per_hectare)
+    ```
+
+    The yield in tons per hectare ranges from -1.148 to 9.963. The 1st Quadrant (3.418) indicates that 25% of the yield is below 3.418 tons per hectare, and the 3rd Quadrant (5.879) indicates that 25% of the yield is above 5.879 or 75% of the yield is below 5.879 tons per hectare.
+
+    The mean(4.649) and median(4.652) give an insight into the skewness of the yield. The mean being less than the median gives an indication that the distribution of the yield is negatively skewed.
+
+    Key findings from the analytic questions:
+
+    **What weather conditions (Sunny, Rainy, Cloudy) are most favourable for higher crop yields?**
+
+    ```{r}
+    data %>% 
+      ggplot(aes(x = weather_condition, y = yield_tons_per_hectare, fill = weather_condition)) + 
+      geom_bar(stat = "identity", position = "dodge", color = NA, width = 0.7) +
+      coord_cartesian(ylim = c(0, 20)) +
+      labs(title = "Weather conditions by crop yield",
+           x = "Weather Condition",
+           y = "Yield (tons per hectare)") +
+      theme_minimal()
+
+    ```
+
+Based on the chart, the total yield for these weather conditions ranges from 0 to approximately 10 tons per hectare. Since the yields for cloudy, rainy and sunny days are almost identical, it seems that the weather conditions didn’t dramatically influence the yield. This could suggest that the crops are adaptable to different weather patterns or that other factors (like soil quality, irrigation, or farming practices) may have a stronger influence on yield than the weather itself.
+
+The fact that all weather conditions show similar yields also points to the possibility that none of the weather conditions had a major negative or positive effect on crop growth during this period. This could be a good sign of overall favourable agricultural conditions.
+
+If this pattern holds across different years or crops, farmers might feel confident in planting regardless of whether the forecast predicts sunny, cloudy or rainy days.
+
+**Is there a relationship between weather conditions and specific crop types or regions in terms of yield?**
+
+```{r}
+data %>% 
+  ggplot(aes(x = weather_condition, y = yield_tons_per_hectare, fill = weather_condition)) +
+  geom_bar(stat = "identity", position = "dodge", color = NA, width = 0.7) +  
+  facet_wrap(~crop) + 
+  labs(title = "Yield by Weather Condition and Crop Type",
+       x = "Weather Condition",
+       y = "Yield (tons per hectare)") + 
+  theme_minimal()
+```
+
+Barley seems to perform best under cloudy conditions, with other weather conditions (rainy and sunny) yielding slightly lower but still reasonable results. This could indicate that barley is more suited to cooler, overcast conditions, but still does well under a range of weather.
+
+Maize appears to be relatively unaffected by different weather conditions, though sunny weather seems to have a slight positive effect. This suggests maize is resilient and capable of producing stable yields regardless of weather changes.
+
+Rice appears to benefit more from rainy conditions, which is consistent with the fact that rice is typically grown in areas with ample water. The higher yield under rainy weather indicates that water availability is a key factor for optimal rice production.
+
+Like rice, soy beans also seem to benefit from more water (rain), leading to higher yields during rainy weather. This indicates that adequate moisture is essential for maximizing soy bean growth.
+
+Similar to rice and soybeans, wheat seems to thrive with more moisture from rain.
+
+**Do rainy conditions result in a higher or lower yield compared to sunny or cloudy weather?**
+
+Based on the previous analysis, rainy conditions result in a higher yield for certain crops when compared to sunny or cloudy weather.
+
+Rainy weather generally results in higher yields for crops like rice, soy bean and wheat, as they thrive with more moisture.
+
+For barley, cloudy weather appears to be optimal, while cotton and maize show stable performance across all weather conditions.
+
+**Does the use of irrigation increase the crop yield compared to crops that were not irrigated?**
+
+```{r warning=F}
+data %>% ggplot(aes(x = irrigation_used, y = yield_tons_per_hectare, fill = irrigation_used)) + 
+  geom_bar(stat = "identity", position = "dodge", width = 0.7) +
+  facet_wrap(~crop) +
+  scale_y_continuous(limits = c(0, 15), expand = c(0, 0)) +
+  labs(title = "Yield by irrigation and crop type",
+       x= "Irrigation",
+       y= "Yield(tons per hectare)")
+  
+```
+
+The bar chart illustrates the yield by irrigation and crop type. The False shows no irrigation and the true shows irrigation were used which is denoted by the blue colour. In all crop types the use of irrigation shown influence in the increase of crop yield.
