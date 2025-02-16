@@ -371,7 +371,7 @@ The analysis of crop yield data across different regions and crop types reveals 
 
 **Fertilizer's Impact:**
 
--    The application of fertilizer (True) is associated with a noticeable increase in crop yield.
+-   The application of fertilizer (True) is associated with a noticeable increase in crop yield.
 
 **Rainfall's impact:**
 
