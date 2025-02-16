@@ -299,31 +299,6 @@ summary(lm_model)
 
 ```
 
-```{python}
-import pandas as pd
-import seaborn as sns
-import matplotlib.pyplot as plt
-
-# Assuming your data is in a pandas DataFrame called 'data'
-# Set the plot style to minimal
-sns.set_theme(style="whitegrid")
-
-# Create the bar plot
-plt.figure(figsize=(10, 6))
-sns.barplot(data=data, x='region', y='yield_tons_per_hectare', hue='crop', dodge=True)
-
-# Customize the plot
-plt.title('Crop Yield by Region and Crop Type', fontsize=16)
-plt.xlabel('Region', fontsize=12)
-plt.ylabel('Yield (tons per hectare)', fontsize=12)
-plt.ylim(0, 15)
-
-# Show the plot
-plt.tight_layout()
-plt.show()
-
-```
-
 ### **Crop Yield by Region and Crop Type:**
 
 The chart shows how different crop types perform in various regions:
