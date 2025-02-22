@@ -1,7 +1,10 @@
 ---
 title: "Data Analysis on Crop Yield"
 author: "Omari Ebenezer"
-output: html_notebook
+output:
+  word_document: default
+  html_notebook: default
+  pdf_document: default
 ---
 
 This project analyses crop yield to uncover insights into crop yield efficiency, fertilizer impacts on crop yield, the weather condition on crop yield and other related factors such as soil type, region, irrigation used.\
@@ -85,6 +88,18 @@ Analytic Questions:
     ```
 
     ```{r}
+    # summary of the data set
+    summary(data)
+
+    # Remove rows with negative crop yield
+    data <- data[data$yield_tons_per_hectare >= 0, ]
+
+    # Check the result to ensure the negative values are removed
+    summary(data$yield_tons_per_hectare)
+
+    ```
+
+    ```{r}
     # check the structure of the data set
     str(data)
     ```
@@ -96,9 +111,9 @@ Analytic Questions:
     summary(data$yield_tons_per_hectare)
     ```
 
-    The yield in tons per hectare ranges from -1.148 to 9.963. The 1st Quadrant (3.418) indicates that 25% of the yield is below 3.418 tons per hectare, and the 3rd Quadrant (5.879) indicates that 25% of the yield is above 5.879 or 75% of the yield is below 5.879 tons per hectare.
+    The yield in tons per hectare ranges from 0 to 9.963. The 1st Quadrant (3.418) indicates that 25% of the yield is below 3.418 tons per hectare, and the 3rd Quadrant (5.879) indicates that 25% of the yield is above 5.879 or 75% of the yield is below 5.879 tons per hectare.
 
-    The mean(4.649) and median(4.652) give an insight into the skewness of the yield. The mean being less than the median gives an indication that the distribution of the yield is negatively skewed.
+    The mean(4.650) and median(4.652) give an insight into the skewness of the yield. The mean being less than the median gives an indication that the distribution of the yield is negatively skewed.
 
     Key findings from the analytic questions:
 
@@ -343,6 +358,130 @@ Insights:
 
 -   Region has a small effect, but only the North region shows a marginally significant positive effect on yield.
 
+## **Predictive Model**
+
+```{r}
+# predict crop yield
+# target variable is yield_tons_per_hectare
+data$yield_tons_per_hectare <- as.numeric(data$yield_tons_per_hectare)
+
+# one hot encode categorical variables
+# define a function to process one hot encoding and feature engineering
+
+preprocess_data <- function(data) {
+  data$region <- as.factor(data$region)
+  data$soil_type <- as.factor(data$soil_type)
+  data$crop <- as.factor(data$crop)
+  data$rainfall_mm <- as.numeric(data$rainfall_mm)
+  data$temperature_celsius <- as.numeric(data$temperature_celsius)
+  data$fertilizer_used <- as.factor(data$fertilizer_used)
+  data$irrigation_used <- as.factor(data$irrigation_used)
+  data$weather_condition <- as.factor(data$weather_condition)
+  data$days_to_harvest <- as.numeric(data$days_to_harvest)
+  
+  return(data)
+}
+
+process_data <- preprocess_data(data = data)
+```
+
+```{r}
+process_data <- preprocess_data(data = data)
+```
+
+```{r}
+# select features
+features <- c('region', 'soil_type', 'crop', 'rainfall_mm', 'temperature_celsius', 'fertilizer_used', 'irrigation_used', 'weather_condition', 'days_to_harvest')
+
+# split the data into training and testing
+# set seed for reproducibility
+# load libraries
+set.seed(123)
+library(rpart)
+library(rpart.plot)
+library(caret)
+
+# prepare the data set
+model_data <- process_data
+model_data <- model_data %>% select(all_of(features), yield_tons_per_hectare)
+
+train_index <- createDataPartition(model_data$yield_tons_per_hectare, p = 0.7, list = FALSE)
+train_data <- model_data[train_index,]
+test_data <- model_data[-train_index,]
+```
+
+```{r}
+# train the decision model
+tree_model <- rpart(yield_tons_per_hectare ~ .,
+                    data = train_data,
+                    method = "anova"
+                    )
+
+# print tree model
+print(tree_model)
+
+# Visualize the tree model
+rpart.plot(tree_model)
+```
+
+-   **Root Node**: The **root node** of the decision tree is the first split and shows the most influential feature in predicting crop yield. In this model, **rainfall** is at the root, meaning it has the **highest information gain** and is the most important factor in determining crop yield.
+
+-   **Subsequent Splits**: The tree continues to split the data further based on other features (like **soil type**, **temperature**, etc.). These subsequent splits provide additional insights into how different combinations of features influence the prediction of crop yield.
+
+-   **Feature Interactions**: The nodes below the root represent interactions between features. Each split shows how different values or conditions of features impact the crop yield prediction, highlighting the **importance of feature interactions** in determining the final prediction.
+
+-   **Decision Making**: The model's decision-making process is based on reducing variance or error at each split. The tree prioritizes the feature that results in the best separation of data, leading to more accurate predictions of crop yield.
+
+**Model Performance**
+
+```{r}
+# prediction 
+prediction <- predict(tree_model, test_data, type = "vector")
+```
+
+```{r}
+# Actual values from the test data
+actual_values <- test_data$yield_tons_per_hectare
+```
+
+**R-Squared (R²)**
+
+```{r}
+# Calculate R-squared (R²)
+ss_total <- sum((actual_values - mean(actual_values))^2)
+ss_residual <- sum((actual_values - prediction)^2)
+r_squared <- 1 - (ss_residual / ss_total)
+
+print(paste("R-squared:", r_squared))
+
+```
+
+### Interpretation of R-squared:
+
+-   **R-squared = 0.8689** means that about **87% of the variability in the target variable (crop yield)** is explained by the features in the decision tree model.
+
+-   The remaining **13%** of the variability could be due to other factors not included in the model, noise in the data, or unexplained relationships.
+
+-   An **R-squared value of 0.87** is typically considered a **good fit**, especially in real-world applications where perfect predictions are rare.
+
+-   The model appears to be doing well in terms of predicting crop yield based on the features provided (like rainfall, temperature, soil type etc)
+
+**Root Mean Squared Error**
+
+```{r}
+# Calculate RMSE (Root Mean Squared Error)
+rmse <- sqrt(mean((prediction - actual_values)^2))
+print(paste("RMSE:", rmse))
+```
+
+-   **RMSE (Root Mean Squared Error)** measures the average magnitude of the errors in the predictions. It gives an idea of how far off the predictions are from the actual values.
+
+-   A **RMSE of 0.613** means that, on average, the predicted crop yield is off by about **0.613 tons per hectare** from the actual crop yield.
+
+-   **Lower RMSE values** indicate that the model is making more accurate predictions.
+
+-   An RMSE of **0.613** could be considered quite good, depending on the range of crop yield in your dataset. If the crop yield varies greatly (e.g., ranging from 0 to 10 tons per hectare), then an RMSE of 0.613 might be a reasonable error.
+
 **Conclusion:**
 
 The analysis of crop yield data across different regions and crop types reveals some valuable insights:
@@ -359,7 +498,7 @@ The analysis of crop yield data across different regions and crop types reveals 
 
 **Temperature's Influence on Crop Yield:**
 
--   Temperature plays a significant role in increasing crop yield. Higher temperatures generally lead to higher yields, which might explain the regional differences in crop success. For instance, wheat's success in the East region could be due to more favorable temperature conditions.
+-   Temperature plays a significant role in increasing crop yield. Higher temperatures generally lead to higher yields, which might explain the regional differences in crop success. For instance, wheat's success in the East region could be due to more favourable temperature conditions.
 
 **Soil Type's Impact:**
 
