@@ -178,7 +178,7 @@ Insights:
 
 -   Region has a small effect, but only the North region shows a marginally significant positive effect on yield.
 
-### Predictive Model
+### A supervised regression tree model for yield prediction
 
 ![Image](https://github.com/user-attachments/assets/18effb91-4cbe-41ef-9359-e6b6badd45d5)
 
