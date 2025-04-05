@@ -178,7 +178,7 @@ Insights:
 
 -   Region has a small effect, but only the North region shows a marginally significant positive effect on yield.
 
-### Predictive Model
+### A supervised regression tree model for yield prediction
 
 ![Image](https://github.com/user-attachments/assets/18effb91-4cbe-41ef-9359-e6b6badd45d5)
 
@@ -236,7 +236,7 @@ The analysis of crop yield data across different regions and crop types reveals 
 
 **Irrigation's Impact:**
 
--   The use of irrigation shows a significant positive effect on crop yield, with yields noticeably higher.
+-   The use of irrigation shows a significant positive effect on crop yield, with higher yields.
 
 **Fertilizer's Impact:**
 
@@ -244,6 +244,28 @@ The analysis of crop yield data across different regions and crop types reveals 
 
 **Rainfall's impact:**
 
--   As rainfall increases, crop yield tends to increase as well, which aligns with the general understanding that more water supports better crop growth.
+-   As rainfall increases, crop yield also tends to increase, which aligns with the general understanding that more water supports better crop growth.
+
+## Deployment
+
+### 1. Deploy Locally (Shiny Server or Running Directly in RStudio)
+
+To run the app locally, you can either:
+
+#### Option 1: Using RStudio (Locally)
+1. Open the `app.R` (or `ui.R` and `server.R` if you are using separate files) in RStudio.
+2. Ensure that all dependencies are installed (you can use `install.packages("shiny")` and other necessary packages).
+3. Run the application by clicking **Run App** in the top right of RStudio.
+4. Your app will launch in a web browser on `http://127.0.0.1:XXXX` where `XXXX` is a dynamic port number.
+
+#### Option 2: Using Shiny Server (Locally)
+
+1. Install **Shiny Server** on your machine. [Shiny Server Installation Guide](https://rstudio.com/products/shiny/shiny-server/).
+2. Place your app files (`app.R`, `ui.R`, `server.R`, etc.) in the Shiny Server directory (usually located in `/srv/shiny-server/`).
+3. After placing your app in the directory, navigate to `http://localhost:3838/your_app_name/` to see the app.
+
+### 2. Deploying on ShinyApps.io
+
+ShinyApps.io is an easy-to-use platform provided by RStudio to deploy Shiny apps in the cloud.
 
 ### source: <https://www.kaggle.com/datasets/samuelotiattakorah/agriculture-crop-yield/data>
