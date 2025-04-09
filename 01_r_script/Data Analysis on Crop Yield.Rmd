@@ -525,6 +525,9 @@ library(shiny)
 library(rpart)
 library(dplyr)
 
+# Save model 
+saveRDS(tree_model, "./05_model/tree_model.rds")
+
 # Load trained model
 tree_model <- readRDS("./05_model/tree_model.rds")
 
