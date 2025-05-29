@@ -250,6 +250,8 @@ The analysis of crop yield data across different regions and crop types reveals 
 
 ### 1. Deploy Locally (Shiny Server or Running Directly in RStudio)
 
+App is available `https://omarieben.shinyapps.io/Crop-Yield-Predictor/`
+
 To run the app locally, you can either:
 
 #### Option 1: Using RStudio (Locally)
