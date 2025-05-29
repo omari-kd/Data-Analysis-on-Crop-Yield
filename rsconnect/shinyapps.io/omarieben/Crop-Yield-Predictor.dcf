@@ -1,0 +1,12 @@
+name: Crop-Yield-Predictor
+title: Crop-Yield-Predictor
+username: omarieben
+account: omarieben
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 14846557
+bundleId: 10362111
+url: https://omarieben.shinyapps.io/Crop-Yield-Predictor/
+version: 1
+asMultiple: FALSE
+asStatic: FALSE
